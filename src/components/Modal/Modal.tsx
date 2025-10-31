@@ -11,21 +11,20 @@ export default function Modal({
   children: any;
   onClose: () => void;
 }) {
-  function handleClose(e: KeyboardEvent | React.MouseEvent<HTMLDivElement>) {
-    console.log(e.type);
-    if (e.target === e.currentTarget && e.type === 'click') onClose();
-    if (e.type === 'keydown') {
-      const keyboardEvent = e as KeyboardEvent;
-      if (keyboardEvent.code === 'Escape') {
-        onClose();
-      }
+  function handleEscapeClose(e: KeyboardEvent) {
+    if (e.code === 'Escape') {
+      onClose();
     }
   }
 
+  function handleClose(e: React.MouseEvent<HTMLDivElement>) {
+    if (e.target === e.currentTarget) onClose();
+  }
+
   useEffect(() => {
-    document.addEventListener('keydown', handleClose);
+    document.addEventListener('keydown', handleEscapeClose);
     return () => {
-      document.removeEventListener('keydown', handleClose);
+      document.removeEventListener('keydown', handleEscapeClose);
     };
   }, []);
 
@@ -34,7 +33,7 @@ export default function Modal({
       className={css.backdrop}
       role="dialog"
       aria-modal="true"
-      onClick={handleClose}
+      onMouseDown={handleClose}
     >
       <div className={css.modal}>{children}</div>
     </div>,
