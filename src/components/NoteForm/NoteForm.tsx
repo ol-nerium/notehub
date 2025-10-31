@@ -4,7 +4,8 @@ import * as Yup from 'yup';
 
 import css from './NoteForm.module.css';
 import { createNote } from '@/services/noteService';
-import type { Note, NoteFormValues } from '@/types/note';
+import type { NoteFormValues } from '@/types/note';
+import toast from 'react-hot-toast';
 
 const NoteFormSchema = Yup.object({
   title: Yup.string()
@@ -25,12 +26,13 @@ export default function NoteForm({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient();
   const addNote = useMutation({
     mutationFn: createNote,
-    onSuccess: data => {
-      console.log('Note added successfully', data);
+    onSuccess: _ => {
+      toast.success('Note added successfully');
+
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
     onError: error => {
-      console.log(error);
+      toast.error(`something is wrong( error ${error.message}`);
     },
   });
 
@@ -38,7 +40,6 @@ export default function NoteForm({ onClose }: { onClose: () => void }) {
     values: NoteFormValues,
     actions: FormikHelpers<NoteFormValues>
   ) {
-    // console.log(values);
     addNote.mutate(values);
     actions.resetForm();
   }

@@ -8,7 +8,7 @@ export default function Pagination({
 }: {
   page: number;
   totalPages: number;
-  onPageChange: () => void;
+  onPageChange: (e: { selected: number }) => void;
 }) {
   return (
     <ReactPaginate

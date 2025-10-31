@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 
 import css from './App.module.css';
 import { fetchNotes } from '@/services/noteService';
@@ -10,6 +11,8 @@ import NoteList from '../NoteList/NoteList';
 import SearchBox from '../SearchBox/SearchBox';
 import HeaderButton from '../HeaderButton/HeaderButton';
 import Pagination from '../Pagination/Pagination';
+import Loader from '../Loader/Loader';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 function App() {
   const [page, setPage] = useState(1);
@@ -44,7 +47,7 @@ function App() {
     <div className={css.app}>
       <header className={css.toolbar}>
         <SearchBox onSubmit={handleSearch} />
-        {isSuccess && (
+        {isSuccess && data.totalPages > 1 && (
           <Pagination
             page={page}
             totalPages={data.totalPages}
@@ -53,14 +56,18 @@ function App() {
         )}
         <HeaderButton handleClick={openModal} />
       </header>
-      {isLoading && <p>Loading...</p>} {/* // move to another file */}
-      {isError && <p>Something gone wrong! {error.message}</p>}
-      {isSuccess && <NoteList items={data.notes} />}
+      {isLoading && <Loader />}
+      {isError && (
+        <ErrorMessage text={`Sorry! Something went wrong! ${error.message}`} />
+      )}
+      {/* // move to another file */}
+      {isSuccess && data.notes.length > 0 && <NoteList items={data.notes} />}
       {modal && (
         <Modal onClose={closeModal}>
           <NoteForm onClose={closeModal} />
         </Modal>
       )}
+      <Toaster />
     </div>
   );
 }
